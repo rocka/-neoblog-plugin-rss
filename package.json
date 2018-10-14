@@ -1,0 +1,30 @@
+{
+  "name": "@neoblog/plugin-rss",
+  "version": "0.1.0",
+  "description": "NeoBlog plugin to generate RSS feed",
+  "main": "index.js",
+  "scripts": {
+    "start": "neoblog"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rocka/neoblog-plugin-rss.git"
+  },
+  "keywords": [
+    "neoblog",
+    "neoblog-plugin"
+  ],
+  "author": "rocka <i@rocka.me>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rocka/neoblog-plugin-rss/issues"
+  },
+  "homepage": "https://github.com/rocka/neoblog-plugin-rss#readme",
+  "peerDependencies": {
+    "@neoblog/neoblog": ">=0.2.0",
+    "koa-router": ">=7.4.0"
+  },
+  "dependencies": {
+    "rss": "^1.2.2"
+  }
+}
