@@ -14,34 +14,53 @@ class PluginRSS {
     }
 
     constructor(options) {
-        this.type = options.type || '/rss';
+        this.route = options.route || '/rss';
         if (typeof options.route !== 'string') throw new Error('route must string.');
-        this.route = options.route;
-        this.type = options.type || 10;
+        if (!this.route.startsWith('/')) this.route = '/' + this.route;
+        this.limit = options.limit || 10;
         if (typeof options.limit !== 'number') throw new Error('limit must number.');
-        this.limit = options.limit;
         /** @type {NodeRSS.FeedOptions} */
-        this.feedOptions = options.feedOptions || {};
-        this.server = null;
-        this.router = new Router();
-        this.router.get(this.route, async ctx => {
-            ctx.set('Content-Type', 'text/xml');
-            ctx.body = this.getFeed();
-        });
-        Object.assign(this, PluginRSS.meta, {
-            routes: this.router.routes()
-        });
+        this.feedOptions = Object.assign({
+            title: null, // this would be set in install()
+            feed_url: `${options.feedOptions.site_url}${this.route}`,
+            generator: 'node-rss'
+        }, options.feedOptions)
     }
 
-    getFeed() {
-        this.feed = new RSS(Object.assign({
-            title: this.server.config.title,
-            feed_url: `${this.feedOptions.site_url}${this.route}`,
-            site_url: this.feedOptions.site_url,
-            generator: 'node-rss'
-        }, this.feedOptions));
-        this.server.state.articles.slice(0, this.limit).forEach(a => {
-            this.feed.item({
+    /**
+     * @see https://tools.ietf.org/html/rfc5005#section-3
+     * @param {string} type
+     * @param {number} page
+     */
+    makePaginationLink(type, page) {
+        return {
+            link: {
+                _attr: {
+                    rel: type,
+                    href: `${this.feedOptions.feed_url}?page=${page}`
+                }
+            }
+        };
+    }
+
+    /**
+     * get feed XML
+     * @param {any[]} articles
+     * @param {number} limit
+     * @param {number} page
+     */
+    getFeed(articles, limit, page) {
+        const offset = (page - 1) * limit;
+        const custom_elements = [];
+        if (articles.length > offset + limit) {
+            custom_elements.push(this.makePaginationLink('next', page + 1));
+        }
+        if (page > 1) {
+            custom_elements.push(this.makePaginationLink('previous', page - 1));
+        }
+        const feed = new RSS(Object.assign({ custom_elements }, this.feedOptions));
+        articles.slice(offset, offset + limit).forEach(a => {
+            feed.item({
                 title: a.meta.title,
                 description: a.html,
                 url: `${this.feedOptions.site_url}/article/${a.file.base}`,
@@ -49,11 +68,18 @@ class PluginRSS {
                 date: a.meta.date
             });
         });
-        return this.feed.xml();
+        return feed.xml();
     }
 
-    async install(server) {
-        this.server = server;
+    install(server) {
+        this.feedOptions.title = server.config.title;
+        const router = new Router();
+        router.get(this.route, ctx => {
+            const page = Number(ctx.query.page || 1)
+            ctx.set('Content-Type', 'text/xml');
+            ctx.body = this.getFeed(server.state.articles, this.limit, page);
+        });
+        server.app.use(router.routes());
     }
 }
 
