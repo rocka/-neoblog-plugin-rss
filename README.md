@@ -12,9 +12,10 @@ see [config.js](./config.js).
 new PluginRSS(options: IPluginOptions);
 
 interface IPluginOptions {
-    limit: number,
-    route: string,
+    limit: number
+    route: string
     feedOptions?: NodeRSS.FeedOptions
+    itemOptions?: NodeRSS.ItemOptions
 }
 ```
 
@@ -32,10 +33,6 @@ See [NodeRSS.FeedOptions](https://github.com/dylang/node-rss#feedoptions) for de
 
 But some fields are required:
 
-#### author
-
-Default author for all feed items.
-
 #### site_url
 
 URL to the site that the feed is for.
@@ -43,3 +40,13 @@ URL to the site that the feed is for.
 #### description
 
 Though not required, but it's recommended to have a description.
+
+### itemOptions
+
+See [NodeRSS.ItemOptions](https://github.com/dylang/node-rss#itemoptions) for details.
+
+Useful fields:
+
+#### author
+
+Name of the item's creator.

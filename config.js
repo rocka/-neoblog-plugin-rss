@@ -8,11 +8,13 @@ module.exports = {
             limit: 10,
             route: '/rss',
             feedOptions: {
-                author: 'rocka',
                 site_url: 'http://localhost:2233',
                 description: `NeoBlog 's RSS Plugin`,
                 generator: 'node-rss',
                 language: 'en'
+            },
+            itemOptions: {
+                author: 'rocka'
             }
         })
     ],
