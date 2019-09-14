@@ -7,7 +7,7 @@ class PluginRSS {
     static get meta() {
         return {
             name: 'neoblog-plugin-rss',
-            version: '0.1.0',
+            version: '0.3.0',
             description: 'add RSS feed support.',
             author: 'rocka <i@rocka.me>',
         };

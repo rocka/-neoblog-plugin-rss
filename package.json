@@ -1,6 +1,6 @@
 {
   "name": "@neoblog/plugin-rss",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "NeoBlog plugin to generate RSS feed",
   "main": "index.js",
   "scripts": {
